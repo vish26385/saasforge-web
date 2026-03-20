@@ -43,48 +43,82 @@ export default function OnboardingPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6 max-w-3xl">
-        <div>
-          <h1 className="text-3xl font-bold">Business Onboarding</h1>
-          <p className="text-slate-600 mt-1">
-            Set up your business profile to start using the app properly.
+      <div className="mx-auto max-w-4xl space-y-8">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Business Onboarding
+          </h1>
+          <p className="text-slate-600">
+            Set up your business profile to start using your SaaS workspace.
           </p>
-        </div>
+        </section>
 
-        <Card className="space-y-4">
-          <TextInput
-            placeholder="Business Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+        <Card className="space-y-6">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Business Name
+              </label>
+              <TextInput
+                placeholder="Business Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Email
+              </label>
+              <TextInput
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-          <TextInput
-            placeholder="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Phone
+              </label>
+              <TextInput
+                placeholder="Phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
 
-          <TextInput
-            placeholder="Address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-          />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                Time Zone
+              </label>
+              <TextInput
+                placeholder="Time Zone"
+                value={timeZone}
+                onChange={(e) => setTimeZone(e.target.value)}
+              />
+            </div>
+          </div>
 
-          <TextInput
-            placeholder="Time Zone"
-            value={timeZone}
-            onChange={(e) => setTimeZone(e.target.value)}
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-slate-700">
+              Address
+            </label>
+            <TextInput
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
 
-          <PrimaryButton onClick={handleCreate}>
-            {loading ? "Saving..." : "Create Business"}
-          </PrimaryButton>
+          <div className="pt-2">
+            <PrimaryButton
+              onClick={handleCreate}
+              disabled={loading || !name.trim()}
+            >
+              {loading ? "Saving..." : "Create Business"}
+            </PrimaryButton>
+          </div>
         </Card>
       </div>
     </PageContainer>

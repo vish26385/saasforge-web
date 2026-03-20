@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/authApi";
 import { authStorage } from "@/lib/auth/authStorage";
-import { useRouter } from "next/navigation";
+import Card from "@/components/ui/Card";
 import TextInput from "@/components/ui/TextInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import Card from "@/components/ui/Card";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -36,36 +37,103 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
-      <Card className="w-full max-w-md space-y-5">
-        <div className="space-y-1 text-center">
-          <h1 className="text-3xl font-bold">Create account</h1>
-          <p className="text-slate-600">Start your AI reply assistant</p>
-        </div>
+    <main className="min-h-screen bg-slate-50">
+      <div className="mx-auto grid min-h-screen max-w-6xl lg:grid-cols-2">
+        <section className="hidden lg:flex flex-col justify-between bg-slate-900 p-12 text-white">
+          <div>
+            <p className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
+              SaaSForge Web
+            </p>
 
-        <TextInput
-          placeholder="Full Name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
+            <h1 className="mt-6 text-5xl font-bold leading-tight">
+              Launch your AI SaaS with a reusable frontend base
+            </h1>
 
-        <TextInput
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+            <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
+              Create your account, set up your business, and start building AI
+              automation products on top of this base template.
+            </p>
+          </div>
 
-        <TextInput
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <div className="space-y-4 text-sm text-slate-300">
+            <p>✔ Authentication ready</p>
+            <p>✔ Dashboard and navigation ready</p>
+            <p>✔ AI module, usage, and billing ready</p>
+          </div>
+        </section>
 
-        <PrimaryButton onClick={handleRegister} className="w-full">
-          {loading ? "Creating account..." : "Register"}
-        </PrimaryButton>
-      </Card>
+        <section className="flex items-center justify-center p-6 lg:p-12">
+          <Card className="w-full max-w-md space-y-6">
+            <div className="space-y-2 text-center">
+              <h2 className="text-3xl font-bold text-slate-900">
+                Create account
+              </h2>
+              <p className="text-slate-600">
+                Start your AI reply assistant
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Full Name
+                </label>
+                <TextInput
+                  placeholder="Enter your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Email
+                </label>
+                <TextInput
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                <TextInput
+                  type="password"
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <PrimaryButton
+              onClick={handleRegister}
+              disabled={
+                loading ||
+                !fullName.trim() ||
+                !email.trim() ||
+                !password.trim()
+              }
+              className="w-full"
+            >
+              {loading ? "Creating account..." : "Register"}
+            </PrimaryButton>
+
+            <p className="text-center text-sm text-slate-600">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-slate-900 hover:underline"
+              >
+                Login
+              </Link>
+            </p>
+          </Card>
+        </section>
+      </div>
     </main>
   );
 }

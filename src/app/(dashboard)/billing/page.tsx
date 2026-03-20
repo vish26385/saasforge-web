@@ -45,55 +45,75 @@ export default function BillingPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Billing</h1>
-          <p className="text-slate-600 mt-1">
-            View your current subscription and plan status.
+      <div className="space-y-8">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-bold text-slate-900">Billing</h1>
+          <p className="text-slate-600">
+            View your active subscription and manage upgrades.
           </p>
-        </div>
+        </section>
 
         {loading ? (
           <Card>
-            <p>Loading...</p>
+            <p className="text-slate-600">Loading billing...</p>
           </Card>
         ) : !data ? (
           <Card>
-            <p>No subscription found.</p>
+            <p className="text-slate-600">No subscription found.</p>
           </Card>
         ) : (
-          <Card>
-            <div className="space-y-3">
-              <p>
-                <strong>Plan:</strong> {data.planCode ?? "-"}
-              </p>
-              <p>
-                <strong>Status:</strong> {data.status ?? "-"}
-              </p>
-              <p>
-                <strong>Start Date:</strong>{" "}
-                {formatUtcToLocal(data.startDateUtc)}
-              </p>
-              <p>
-                <strong>End Date:</strong>{" "}
-                {formatUtcToLocal(data.endDateUtc)}
-              </p>
-              <p>
-                <strong>Created At:</strong>{" "}
-                {formatUtcToLocal(data.createdAtUtc)}
-              </p>
-              <p>
-                <strong>Updated At:</strong>{" "}
-                {formatUtcToLocal(data.updatedAtUtc)}
-              </p>
+          <div className="space-y-6">
+            <Card className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-slate-500">Current Plan</p>
+                  <h2 className="mt-2 text-3xl font-bold text-slate-900">
+                    {String(data.planCode ?? "-").toUpperCase()}
+                  </h2>
+                </div>
 
-              <div className="pt-2">
+                <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  {data.status ?? "unknown"}
+                </span>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium text-slate-500">
+                    Start Date
+                  </p>
+                  <p className="mt-2 text-slate-900">
+                    {formatUtcToLocal(data.startDateUtc)}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium text-slate-500">
+                    End Date
+                  </p>
+                  <p className="mt-2 text-slate-900">
+                    {formatUtcToLocal(data.endDateUtc)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3 pt-1">
                 <PrimaryButton onClick={handleUpgrade} disabled={changing}>
                   {changing ? "Changing..." : "Upgrade to Pro"}
                 </PrimaryButton>
               </div>
-            </div>
-          </Card>
+            </Card>
+
+            <Card>
+              <h3 className="text-lg font-semibold text-slate-900">
+                Plan Notes
+              </h3>
+              <p className="mt-2 text-slate-600 leading-7">
+                Your billing module is connected to the backend and ready for
+                real pricing, checkout, and plan management flows.
+              </p>
+            </Card>
+          </div>
         )}
       </div>
     </PageContainer>

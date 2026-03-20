@@ -32,7 +32,7 @@ export default function AppNav() {
             className={
               dashboardActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={dashboardActive ? "text-white" : "text-slate-700"}>
@@ -45,7 +45,7 @@ export default function AppNav() {
             className={
               generateActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={generateActive ? "text-white" : "text-slate-700"}>
@@ -58,7 +58,7 @@ export default function AppNav() {
             className={
               historyActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={historyActive ? "text-white" : "text-slate-700"}>
@@ -71,7 +71,7 @@ export default function AppNav() {
             className={
               businessActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={businessActive ? "text-white" : "text-slate-700"}>
@@ -84,7 +84,7 @@ export default function AppNav() {
             className={
               usageActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={usageActive ? "text-white" : "text-slate-700"}>
@@ -97,7 +97,7 @@ export default function AppNav() {
             className={
               billingActive
                 ? "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-900 text-white"
-                : "inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100"
             }
           >
             <span className={billingActive ? "text-white" : "text-slate-700"}>

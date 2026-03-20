@@ -25,57 +25,99 @@ export default function UsagePage() {
     loadUsage();
   }, []);
 
-  const remaining =
-    data?.aiRequestLimit != null && data?.aiRequestsUsed != null
-      ? data.aiRequestLimit - data.aiRequestsUsed
-      : null;
+  const used = data?.aiRequestsUsed ?? 0;
+  const limit = data?.aiRequestLimit ?? 0;
+  const remaining = limit - used;
+  const percent =
+    limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
 
   return (
     <PageContainer>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Usage</h1>
-          <p className="text-slate-600 mt-1">
-            Track current usage against your request limits.
+      <div className="space-y-8">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-bold text-slate-900">Usage</h1>
+          <p className="text-slate-600">
+            Monitor request consumption and current plan usage.
           </p>
-        </div>
+        </section>
 
         {loading ? (
           <Card>
-            <p>Loading...</p>
+            <p className="text-slate-600">Loading usage...</p>
           </Card>
         ) : !data ? (
           <Card>
-            <p>No usage data found.</p>
+            <p className="text-slate-600">No usage data found.</p>
           </Card>
         ) : (
-          <Card>
-            <div className="space-y-3">
-              <p>
-                <strong>Business ID:</strong> {data.businessId ?? "-"}
-              </p>
-              <p>
-                <strong>Plan Code:</strong> {data.planCode ?? "-"}
-              </p>
-              <p>
-                <strong>AI Requests Used:</strong> {data.aiRequestsUsed ?? "-"}
-              </p>
-              <p>
-                <strong>AI Request Limit:</strong> {data.aiRequestLimit ?? "-"}
-              </p>
-              <p>
-                <strong>Remaining:</strong> {remaining ?? "-"}
-              </p>
-              <p>
-                <strong>Current Period Start:</strong>{" "}
-                {formatUtcToLocal(data.currentPeriodStartUtc)}
-              </p>
-              <p>
-                <strong>Last Updated:</strong>{" "}
-                {formatUtcToLocal(data.lastUpdatedAtUtc)}
-              </p>
+          <div className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-3">
+              <Card>
+                <p className="text-sm text-slate-500">Plan</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">
+                  {data.planCode ?? "-"}
+                </p>
+              </Card>
+
+              <Card>
+                <p className="text-sm text-slate-500">Used</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">
+                  {used}
+                </p>
+              </Card>
+
+              <Card>
+                <p className="text-sm text-slate-500">Remaining</p>
+                <p className="mt-2 text-3xl font-bold text-slate-900">
+                  {remaining >= 0 ? remaining : 0}
+                </p>
+              </Card>
             </div>
-          </Card>
+
+            <Card className="space-y-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-900">
+                    Request Usage
+                  </h2>
+                  <p className="text-sm text-slate-600 mt-1">
+                    {used} of {limit} AI requests used
+                  </p>
+                </div>
+
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                  {percent}% used
+                </span>
+              </div>
+
+              <div className="h-3 w-full rounded-full bg-slate-100">
+                <div
+                  className="h-3 rounded-full bg-indigo-600 transition-all"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium text-slate-500">
+                    Current Period Start
+                  </p>
+                  <p className="mt-2 text-slate-900">
+                    {formatUtcToLocal(data.currentPeriodStartUtc)}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-medium text-slate-500">
+                    Last Updated
+                  </p>
+                  <p className="mt-2 text-slate-900">
+                    {formatUtcToLocal(data.lastUpdatedAtUtc)}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
         )}
       </div>
     </PageContainer>

@@ -28,43 +28,53 @@ export default function HistoryPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">AI History</h1>
-          <p className="text-slate-600 mt-1">
-            Review previous prompts and generated replies.
+      <div className="space-y-8">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-bold text-slate-900">History</h1>
+          <p className="text-slate-600">
+            Review previously generated replies and prompts.
           </p>
-        </div>
+        </section>
 
         {loading ? (
           <Card>
-            <p>Loading...</p>
+            <p className="text-slate-600">Loading history...</p>
           </Card>
         ) : items.length === 0 ? (
           <Card>
-            <p>No history found.</p>
+            <p className="text-slate-600">No history found yet.</p>
           </Card>
         ) : (
           <div className="space-y-4">
             {items.map((item) => (
-              <Card key={item.id}>
-                <div className="space-y-3">
-                  <p>
-                    <strong>Prompt:</strong> {item.prompt}
-                  </p>
-                  <p>
-                    <strong>Reply:</strong> {item.response}
-                  </p>
-                  <p>
-                    <strong>Feature:</strong> {item.featureType}
-                  </p>
-                  <p>
-                    <strong>Model:</strong> {item.model || "-"}
-                  </p>
-                  <p>
-                    <strong>Created:</strong>{" "}
+              <Card key={item.id} className="space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex gap-2">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                      {item.featureType}
+                    </span>
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                      {item.model || "AI Model"}
+                    </span>
+                  </div>
+
+                  <span className="text-sm text-slate-500">
                     {formatUtcToLocal(item.createdAtUtc)}
-                  </p>
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-slate-500">Prompt</p>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-slate-800">
+                    {item.prompt}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-slate-500">Reply</p>
+                  <div className="rounded-xl border border-slate-200 bg-white p-4 text-slate-800 leading-7 whitespace-pre-wrap">
+                    {item.response}
+                  </div>
                 </div>
               </Card>
             ))}

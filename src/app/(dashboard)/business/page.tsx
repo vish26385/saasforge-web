@@ -21,7 +21,6 @@ export default function BusinessPage() {
     const loadBusiness = async () => {
       try {
         const res = await businessApi.getMe();
-
         setName(res.name || "");
         setSlug(res.slug || "");
         setEmail(res.email || "");
@@ -61,59 +60,97 @@ export default function BusinessPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-6 max-w-3xl">
-        <div>
-          <h1 className="text-3xl font-bold">Business Profile</h1>
-          <p className="text-slate-600 mt-1">
-            Manage your business details and contact information.
+      <div className="space-y-8 max-w-4xl">
+        <section className="space-y-2">
+          <h1 className="text-3xl font-bold text-slate-900">
+            Business Profile
+          </h1>
+          <p className="text-slate-600">
+            Manage your business identity and contact information.
           </p>
-        </div>
+        </section>
 
         {loading ? (
           <Card>
-            <p>Loading...</p>
+            <p className="text-slate-600">Loading business profile...</p>
           </Card>
         ) : (
-          <Card className="space-y-4">
-            <TextInput
-              placeholder="Business Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+          <Card className="space-y-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Business Name
+                </label>
+                <TextInput
+                  placeholder="Business Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
 
-            <TextInput
-              placeholder="Slug"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
-            />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Slug
+                </label>
+                <TextInput
+                  placeholder="Slug"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                />
+              </div>
 
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Email
+                </label>
+                <TextInput
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
 
-            <TextInput
-              placeholder="Phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Phone
+                </label>
+                <TextInput
+                  placeholder="Phone"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
+            </div>
 
-            <TextInput
-              placeholder="Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Address
+                </label>
+                <TextInput
+                  placeholder="Address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                />
+              </div>
 
-            <TextInput
-              placeholder="Time Zone"
-              value={timeZone}
-              onChange={(e) => setTimeZone(e.target.value)}
-            />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Time Zone
+                </label>
+                <TextInput
+                  placeholder="Time Zone"
+                  value={timeZone}
+                  onChange={(e) => setTimeZone(e.target.value)}
+                />
+              </div>
+            </div>
 
-            <PrimaryButton onClick={handleSave}>
-              {saving ? "Saving..." : "Update Business"}
-            </PrimaryButton>
+            <div className="pt-2">
+              <PrimaryButton onClick={handleSave} disabled={saving}>
+                {saving ? "Saving..." : "Update Business"}
+              </PrimaryButton>
+            </div>
           </Card>
         )}
       </div>
