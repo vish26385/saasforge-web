@@ -1,5 +1,5 @@
-import ProtectedRoute from "@/components/layout/ProtectedRoute";
 import AppNav from "@/components/layout/AppNav";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 export default function DashboardLayout({
   children,
@@ -7,9 +7,12 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ProtectedRoute>
-      <AppNav />
-      {children}
-    </ProtectedRoute>
+    <RequireBusiness>
+      <div className="min-h-screen bg-slate-50">
+        <AppNav />
+        {children}
+      </div>
+    </RequireBusiness>
   );
 }
+

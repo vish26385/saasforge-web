@@ -6,10 +6,13 @@ import { AiHistoryItem } from "@/lib/types/ai";
 import { formatUtcToLocal } from "@/lib/utils/format";
 import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
+import { useToast } from "@/components/ui/Toast";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 export default function HistoryPage() {
   const [items, setItems] = useState<AiHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -17,7 +20,7 @@ export default function HistoryPage() {
         const res = await aiApi.history();
         setItems(res);
       } catch (err) {
-        alert(err instanceof Error ? err.message : "Failed to load history");
+        toast(err instanceof Error ? err.message : "Failed to load history");
       } finally {
         setLoading(false);
       }
@@ -27,6 +30,7 @@ export default function HistoryPage() {
   }, []);
 
   return (
+    <RequireBusiness>
     <PageContainer>
       <div className="space-y-8">
         <section className="space-y-2">
@@ -82,5 +86,6 @@ export default function HistoryPage() {
         )}
       </div>
     </PageContainer>
+    </RequireBusiness>
   );
 }

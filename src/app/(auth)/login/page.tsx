@@ -4,42 +4,96 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/authApi";
+import { businessApi } from "@/lib/api/businessApi";
 import { authStorage } from "@/lib/auth/authStorage";
+import { useToast } from "@/components/ui/Toast";
 import Card from "@/components/ui/Card";
 import TextInput from "@/components/ui/TextInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 
 export default function LoginPage() {
   const router = useRouter();
-
+  const toast = useToast();
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+  let hasError = false;
+
+  const newErrors = {
+    email: "",
+    password: "",
+  };
+
+  if (!email.trim()) {
+    newErrors.email = "Email is required";
+    hasError = true;
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    newErrors.email = "Invalid email format";
+    hasError = true;
+  }
+
+  if (!password.trim()) {
+    newErrors.password = "Password is required";
+    hasError = true;
+  }
+
+  setErrors(newErrors);
+
+  if (hasError) return;
+
+  try {
+    setLoading(true);
+
+    const res = await authApi.login({ email, password });
+
+    authStorage.setTokens(res.token, res.refreshToken);
+
     try {
-      setLoading(true);
+      const business = await businessApi.getMe();
 
-      const res = await authApi.login({
-        email,
-        password,
-      });
-
-      authStorage.setTokens(res.token, res.refreshToken);
-
-      try {
-        const { businessApi } = await import("@/lib/api/businessApi");
-        await businessApi.getMe();
-        router.push("/dashboard");
-      } catch {
-        router.push("/onboarding");
+      if (business?.id) {
+        toast("Login successful");
+        window.location.href = "/dashboard";
+      } else {
+        toast("Please complete onboarding");
+        window.location.href = "/onboarding";
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Login failed");
-    } finally {
-      setLoading(false);
+      const msg = err instanceof Error ? err.message : "";
+
+      if (msg.includes("404")) {
+        toast("Please complete onboarding");
+        window.location.href = "/onboarding";
+      } else {
+        window.location.href = "/dashboard";
+      }
     }
-  };
+  } catch (err) {
+    const rawMessage = err instanceof Error ? err.message : "";
+
+    let message = "Something went wrong. Please try again.";
+
+    if (
+      rawMessage.includes("Unauthorized") ||
+      rawMessage.includes("401")
+    ) {
+      message = "Invalid email or password";
+    } else if (rawMessage.trim()) {
+      // Remove "401: " or "500: " prefix if exists
+      message = rawMessage.replace(/^\d+:\s*/, "");
+    }
+
+    toast(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -82,24 +136,30 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
                   Email
-                </label>
+                </label>                
                 <TextInput
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
                   Password
-                </label>
+                </label>                
                 <TextInput
                   type="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
             </div>
 

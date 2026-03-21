@@ -5,10 +5,13 @@ import { usageApi, UsageInfo } from "@/lib/api/usageApi";
 import { formatUtcToLocal } from "@/lib/utils/format";
 import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
+import { useToast } from "@/components/ui/Toast";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 export default function UsagePage() {
   const [data, setData] = useState<UsageInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const loadUsage = async () => {
@@ -16,7 +19,7 @@ export default function UsagePage() {
         const res = await usageApi.getMe();
         setData(res);
       } catch (err) {
-        alert(err instanceof Error ? err.message : "Failed to load usage");
+        toast(err instanceof Error ? err.message : "Failed to load usage");
       } finally {
         setLoading(false);
       }
@@ -32,6 +35,7 @@ export default function UsagePage() {
     limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
 
   return (
+    <RequireBusiness>
     <PageContainer>
       <div className="space-y-8">
         <section className="space-y-2">
@@ -121,5 +125,6 @@ export default function UsagePage() {
         )}
       </div>
     </PageContainer>
+    </RequireBusiness>
   );
 }

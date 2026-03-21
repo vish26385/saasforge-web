@@ -5,36 +5,95 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/authApi";
 import { authStorage } from "@/lib/auth/authStorage";
+import { useToast } from "@/components/ui/Toast";
 import Card from "@/components/ui/Card";
 import TextInput from "@/components/ui/TextInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 
 export default function RegisterPage() {
   const router = useRouter();
-
+  const toast = useToast();
+  const [errors, setErrors] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    try {
-      setLoading(true);
+  let hasError = false;
 
-      const res = await authApi.register({
-        fullName,
-        email,
-        password,
-      });
-
-      authStorage.setTokens(res.token, res.refreshToken);
-      router.push("/onboarding");
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Registration failed");
-    } finally {
-      setLoading(false);
-    }
+  const newErrors = {
+    fullName: "",
+    email: "",
+    password: "",
   };
+
+  if (!fullName.trim()) {
+    newErrors.fullName = "Full name is required";
+    hasError = true;
+  }
+
+  if (!email.trim()) {
+    newErrors.email = "Email is required";
+    hasError = true;
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    newErrors.email = "Invalid email format";
+    hasError = true;
+  }
+
+  if (!password.trim()) {
+    newErrors.password = "Password is required";
+    hasError = true;
+  } else if (password.length < 6) {
+    newErrors.password = "Password must be at least 6 characters";
+    hasError = true;
+  }
+
+  setErrors(newErrors);
+
+  if (hasError) return;
+
+  try {
+    setLoading(true);
+
+    const res = await authApi.register({
+      fullName,
+      email,
+      password,
+    });
+
+    authStorage.setTokens(res.token, res.refreshToken);
+    toast("Account created successfully");
+    window.location.href = "/onboarding";
+  } catch (err) {
+    const rawMessage = err instanceof Error ? err.message : "";
+    const lower = rawMessage.toLowerCase();
+
+    let message = "Something went wrong. Please try again.";
+
+    if (
+      lower.includes("already") ||
+      lower.includes("exists") ||
+      lower.includes("duplicate") ||
+      lower.includes("email is taken") ||
+      lower.includes("username") ||
+      lower.includes("email") ||
+      rawMessage.includes("409")
+    ) {
+      message = "An account with this email already exists";
+    } else if (rawMessage.trim()) {
+      message = rawMessage.replace(/^\d+:\s*/, "");
+    }
+
+    toast(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-slate-50">
@@ -83,6 +142,9 @@ export default function RegisterPage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                 />
+                {errors.fullName && (
+                  <p className="text-sm text-red-500">{errors.fullName}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -94,6 +156,9 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -106,6 +171,9 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                {errors.password && (
+                  <p className="text-sm text-red-500">{errors.password}</p>
+                )}
               </div>
             </div>
 

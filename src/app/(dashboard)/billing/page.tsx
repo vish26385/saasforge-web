@@ -5,24 +5,40 @@ import {
   subscriptionApi,
   SubscriptionInfo,
 } from "@/lib/api/subscriptionApi";
+import { usageApi } from "@/lib/api/usageApi";
 import { formatUtcToLocal } from "@/lib/utils/format";
 import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { useToast } from "@/components/ui/Toast";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 export default function BillingPage() {
   const [data, setData] = useState<SubscriptionInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [changing, setChanging] = useState(false);
+  const toast = useToast();
 
   const loadSubscription = async () => {
     try {
       const res = await subscriptionApi.getMe();
       setData(res);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to load subscription");
+      toast(err instanceof Error ? err.message : "Failed to load subscription");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const refreshBillingState = async () => {
+    const res = await subscriptionApi.getMe();
+    setData(res);
+
+    // optional but recommended: refresh usage too so plan limits stay in sync in UI
+    try {
+      await usageApi.getMe();
+    } catch {
+      // ignore usage refresh failure here
     }
   };
 
@@ -33,17 +49,27 @@ export default function BillingPage() {
   const handleUpgrade = async () => {
     try {
       setChanging(true);
+
       const res = await subscriptionApi.changePlanToPro();
-      setData(res);
-      alert("Plan changed to Pro");
+
+      // IMPORTANT: backend now returns wrapper object
+      setData(res.subscription);
+
+      toast(res.message || "Plan changed to Pro");
+
+      // Re-fetch backend source of truth so UI is always correct
+      await refreshBillingState();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to change plan");
+      toast(err instanceof Error ? err.message : "Failed to change plan");
     } finally {
       setChanging(false);
     }
   };
 
+  const isPro = data?.planCode?.toLowerCase() === "pro";
+
   return (
+    <RequireBusiness>
     <PageContainer>
       <div className="space-y-8">
         <section className="space-y-2">
@@ -98,8 +124,12 @@ export default function BillingPage() {
               </div>
 
               <div className="flex flex-wrap gap-3 pt-1">
-                <PrimaryButton onClick={handleUpgrade} disabled={changing}>
-                  {changing ? "Changing..." : "Upgrade to Pro"}
+                <PrimaryButton onClick={handleUpgrade} disabled={changing || isPro}>
+                  {changing
+                    ? "Changing..."
+                    : isPro
+                    ? "Already on Pro"
+                    : "Upgrade to Pro"}
                 </PrimaryButton>
               </div>
             </Card>
@@ -117,5 +147,6 @@ export default function BillingPage() {
         )}
       </div>
     </PageContainer>
+    </RequireBusiness>
   );
 }

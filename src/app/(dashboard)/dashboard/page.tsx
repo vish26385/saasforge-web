@@ -3,6 +3,7 @@
 import Link from "next/link";
 import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 const cards = [
   {
@@ -39,6 +40,7 @@ const cards = [
 
 export default function DashboardPage() {
   return (
+     <RequireBusiness>
     <PageContainer>
       <div className="space-y-8">
         <section className="rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white p-8 shadow-sm">
@@ -137,5 +139,6 @@ export default function DashboardPage() {
         </section>
       </div>
     </PageContainer>
+    </RequireBusiness>
   );
 }

@@ -6,6 +6,8 @@ import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
 import TextInput from "@/components/ui/TextInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { useToast } from "@/components/ui/Toast";
+import RequireBusiness from "@/components/auth/RequireBusiness";
 
 export default function BusinessPage() {
   const [name, setName] = useState("");
@@ -16,6 +18,12 @@ export default function BusinessPage() {
   const [timeZone, setTimeZone] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const toast = useToast();
+  const [errors, setErrors] = useState({
+    name: "",
+    slug: "",
+    email: "",
+  });
 
   useEffect(() => {
     const loadBusiness = async () => {
@@ -28,7 +36,7 @@ export default function BusinessPage() {
         setAddress(res.address || "");
         setTimeZone(res.timeZone || "");
       } catch (err) {
-        alert(err instanceof Error ? err.message : "Failed to load business");
+        toast(err instanceof Error ? err.message : "Failed to load business");
       } finally {
         setLoading(false);
       }
@@ -38,27 +46,61 @@ export default function BusinessPage() {
   }, []);
 
   const handleSave = async () => {
-    try {
-      setSaving(true);
+  let hasError = false;
 
-      await businessApi.updateMe({
-        name,
-        slug: slug || name.toLowerCase().trim().replace(/\s+/g, "-"),
-        email: email || null,
-        phone: phone || null,
-        address: address || null,
-        timeZone: timeZone || null,
-      });
-
-      alert("Business updated");
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to update business");
-    } finally {
-      setSaving(false);
-    }
+  const newErrors = {
+    name: "",
+    slug: "",
+    email: "",
   };
 
+  const trimmedName = name.trim();
+  const finalSlug = (slug || trimmedName.toLowerCase().replace(/\s+/g, "-")).trim();
+
+  if (!trimmedName) {
+    newErrors.name = "Business name is required";
+    hasError = true;
+  }
+
+  if (!finalSlug) {
+    newErrors.slug = "Slug is required";
+    hasError = true;
+  } else if (!/^[a-z0-9-]+$/.test(finalSlug)) {
+    newErrors.slug = "Slug can contain only lowercase letters, numbers, and hyphens";
+    hasError = true;
+  }
+
+  if (email.trim() && !/\S+@\S+\.\S+/.test(email)) {
+    newErrors.email = "Invalid email format";
+    hasError = true;
+  }
+
+  setErrors(newErrors);
+
+  if (hasError) return;
+
+  try {
+    setSaving(true);
+
+    await businessApi.updateMe({
+      name: trimmedName,
+      slug: finalSlug,
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
+      timeZone: timeZone || null,
+    });
+
+    toast("Business updated");
+  } catch (err) {
+    toast(err instanceof Error ? err.message : "Failed to update business");
+  } finally {
+    setSaving(false);
+  }
+};
+
   return (
+    <RequireBusiness>
     <PageContainer>
       <div className="space-y-8 max-w-4xl">
         <section className="space-y-2">
@@ -86,6 +128,9 @@ export default function BusinessPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+                {errors.name && (
+                  <p className="text-sm text-red-500">{errors.name}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -97,6 +142,9 @@ export default function BusinessPage() {
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
                 />
+                {errors.slug && (
+                  <p className="text-sm text-red-500">{errors.slug}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -108,6 +156,9 @@ export default function BusinessPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+                {errors.email && (
+                  <p className="text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -155,5 +206,6 @@ export default function BusinessPage() {
         )}
       </div>
     </PageContainer>
+    </RequireBusiness>
   );
 }

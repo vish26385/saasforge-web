@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { businessApi } from "@/lib/api/businessApi";
 import PageContainer from "@/components/ui/PageContainer";
 import Card from "@/components/ui/Card";
 import TextInput from "@/components/ui/TextInput";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { useToast } from "@/components/ui/Toast";
 
 export default function OnboardingPage() {
   const router = useRouter();
-
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -18,28 +19,62 @@ export default function OnboardingPage() {
   const [timeZone, setTimeZone] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+  });
+
+  useEffect(() => {
+  if (!timeZone) {
+    const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setTimeZone(detected === "Asia/Calcutta" ? "Asia/Kolkata" : detected);
+  }
+}, [timeZone]);
+
   const handleCreate = async () => {
-    try {
-      setLoading(true);
+  let hasError = false;
 
-      const trimmedName = name.trim();
-
-      await businessApi.create({
-        name: trimmedName,
-        slug: trimmedName.toLowerCase().replace(/\s+/g, "-"),
-        email: email || null,
-        phone: phone || null,
-        address: address || null,
-        timeZone: timeZone || null,
-      });
-
-      router.push("/dashboard");
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Failed to create business");
-    } finally {
-      setLoading(false);
-    }
+  const newErrors = {
+    name: "",
+    email: "",
   };
+
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    newErrors.name = "Business name is required";
+    hasError = true;
+  }
+
+  if (email.trim() && !/\S+@\S+\.\S+/.test(email)) {
+    newErrors.email = "Invalid email format";
+    hasError = true;
+  }
+
+  setErrors(newErrors);
+
+  if (hasError) return;
+
+  try {
+    setLoading(true);
+
+    await businessApi.create({
+      name: trimmedName,
+      slug: trimmedName.toLowerCase().replace(/\s+/g, "-"),
+      email: email || null,
+      phone: phone || null,
+      address: address || null,
+      timeZone: timeZone || null,
+    });
+
+    toast("Business created successfully");
+    window.location.href = "/dashboard";
+  } catch (err) {
+    toast(err instanceof Error ? err.message : "Failed to create business");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <PageContainer>
@@ -64,6 +99,9 @@ export default function OnboardingPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -75,6 +113,9 @@ export default function OnboardingPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
 
             <div className="space-y-2">
